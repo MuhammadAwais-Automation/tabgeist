@@ -127,5 +127,7 @@ export async function dispatch(d: CallCtx['d'], method: string, params: Record<s
     }
     try { d.timeline.add(entry) } catch { /* a full disk must not fail the call */ }
   }
+  // The agent learns who let a risky step through (or stopped it), not just that it ran.
+  if (ctx.meta.approvals?.length) result = { ...result, approvals: ctx.meta.approvals }
   return result
 }

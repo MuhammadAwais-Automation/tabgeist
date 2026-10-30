@@ -190,7 +190,9 @@ async function openTab(url, active, room) {
     return info(tab, new Set())
   }
   const tab = await chrome.tabs.create({ url, active: !!active, windowId: win.id })
-  // Agent tabs live in one group per window and are never discarded.
+  // Agent tabs live in one group per window, are never discarded, and stay
+  // muted: focus emulation makes sites like YouTube autoplay with sound.
+  await chrome.tabs.update(tab.id, { muted: true }).catch(() => {})
   const groups = await agentGroupIds()
   const [group] = (await chrome.tabGroups.query({ windowId: win.id })).filter(g => groups.has(g.id))
   if (group) await chrome.tabs.group({ tabIds: [tab.id], groupId: group.id })

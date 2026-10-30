@@ -22,6 +22,9 @@ const time = (at: number) => new Date(at).toLocaleTimeString([], { hour: '2-digi
 const when = (at: number) => { const d = new Date(at); return d.toDateString() === new Date().toDateString() ? time(at) : d.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) }
 const ago = (at?: number) => { if (!at) return 'never'; const s = Math.round((Date.now() - at) / 1000); return s < 60 ? `${s} s ago` : s < 3600 ? `${Math.round(s / 60)} min ago` : s < 86400 ? `${Math.round(s / 3600)} h ago` : `${Math.round(s / 86400)} days ago` }
 const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`
+/** Who decided an approval, in words a person reads. */
+const BY: Record<string, string> = { browser: 'by you, in the browser', 'control-room': 'by you, in the control room', grant: 'by your earlier yes for this site', limit: 'by your rate limit', timeout: 'nobody answered in time' }
+const byWho = (by?: string) => (by && BY[by]) || (by ? `by ${by}` : '')
 const isToday = (at: number) => new Date(at).toDateString() === new Date().toDateString()
 
 const store = {
@@ -196,7 +199,7 @@ async function exportSession(id: string, entries: Any[], brand: string): Promise
   const rows: string[] = []
   for (const [i, e] of entries.entries()) {
     const pic = e.shot ? await img(e.shot) : ''
-    rows.push(`<section class="${e.ok ? '' : 'bad'}"><b class="no">${i + 1}</b><h3>${esc(e.method.replace('browser.', ''))}</h3><p class="meta">${esc(new Date(e.at).toLocaleString())}, ${e.ms} ms${e.site ? `, ${esc(e.site)}` : ''}</p>${e.input ? `<code>${esc(e.input)}</code>` : ''}<p>${esc(e.summary)}</p>${(e.approvals ?? []).map((a: Any) => `<p class="ap ${a.allow ? 'ok' : 'no'}">${a.allow ? 'Allowed' : 'Denied'}: ${esc(a.title)} (${esc(a.by ?? '')})</p>`).join('')}${pic ? `<img src="${pic}" alt="">` : ''}</section>`)
+    rows.push(`<section class="${e.ok ? '' : 'bad'}"><b class="no">${i + 1}</b><h3>${esc(e.method.replace('browser.', ''))}</h3><p class="meta">${esc(new Date(e.at).toLocaleString())}, ${e.ms} ms${e.site ? `, ${esc(e.site)}` : ''}</p>${e.input ? `<code>${esc(e.input)}</code>` : ''}<p>${esc(e.summary)}</p>${(e.approvals ?? []).map((a: Any) => `<p class="ap ${a.allow ? 'ok' : 'no'}">${a.allow ? 'Allowed' : 'Denied'}: ${esc(a.title)} (${esc(byWho(a.by))})</p>`).join('')}${pic ? `<img src="${pic}" alt="">` : ''}</section>`)
   }
   const css = 'body{font:15px/1.5 system-ui,sans-serif;background:#0f1a21;color:#e9eae3;max-width:860px;margin:32px auto;padding:0 16px}h1{font-size:28px;margin:0}section{position:relative;border:1px solid #253844;border-radius:10px;padding:12px 16px 12px 60px;margin:12px 0;background:#15232c}section.bad{border-color:#ec5d53}.no{position:absolute;left:14px;top:12px;width:30px;height:30px;border-radius:50%;border:2px solid #5d7886;display:grid;place-items:center;font-size:12px}h3{margin:0;font-size:15px}.meta{color:#718389;font-size:12px;margin:2px 0 0}code{display:block;color:#a9b6bb;font:12px ui-monospace,monospace;white-space:pre-wrap;margin-top:6px}img{max-width:100%;border-radius:6px;margin-top:8px}.ap.ok{color:#5cc98f}.ap.no{color:#ec5d53}'
   const html = `<!doctype html><meta charset="utf-8"><title>${esc(brand)} replay ${esc(id)}</title><style>${css}</style><h1>${esc(brand)} replay</h1><p>Session ${esc(id)}, ${entries.length} steps. Secrets were fogged when they were recorded.</p>${rows.join('')}`
@@ -233,7 +236,7 @@ function Timeline({ brand }: { brand: string }) {
                 {e.input && <div class="input">{e.input}</div>}
                 <p>{e.summary}</p>
                 {(e.approvals?.length > 0 || e.routine) && <div class="row" style="margin-top:var(--s2)">
-                  {e.approvals?.map((a: Any) => <span class={`state ${a.allow ? 'green' : 'red'}`}><Lamp c={a.allow ? 'green' : 'red'} />{a.allow ? 'Allowed' : 'Denied'}: {a.title} ({a.by})</span>)}
+                  {e.approvals?.map((a: Any) => <span class={`state ${a.allow ? 'green' : 'red'}`}><Lamp c={a.allow ? 'green' : 'red'} />{a.allow ? 'Allowed' : 'Denied'}: {a.title} ({byWho(a.by)})</span>)}
                   {e.routine && <span class="state">routine {e.routine}</span>}
                 </div>}
                 {e.shot && <img loading="lazy" src={`/shots/${e.shot}`} alt={`The page after step ${i + 1}`} onError={ev => { (ev.currentTarget as HTMLImageElement).hidden = true }} />}
