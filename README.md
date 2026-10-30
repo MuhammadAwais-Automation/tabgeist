@@ -99,17 +99,22 @@ They are good tools with different aims: Playwright MCP is built for testing and
 - Agent tabs open in the background in their own tab group, are never discarded, and work while the browser is minimised.
 - Reads like a person sees: menus and pickers, iframes, long chats and feeds that only draw what is on screen, emoji and stickers.
 - Acts like a person: a real mouse and keyboard for click, type, select, drag, drop and upload. Files the page downloads are saved and handed to the agent.
+- Sees what text cannot say: a picture of the page, of the whole scrolling page, or of one element by ref (a GIF in a picker, a chart, a canvas, the frame a video is showing). Pictures are of the page itself, never of your screen.
+- Saves what a page shows or links to (an image, a video, a PDF) with your sign-in, into `Downloads/Tabgeist/<site>`.
+- Several agents at once: each tab belongs to one agent at a time. A second agent waits and is told "in use by …" instead of clicking into the middle of someone else's task.
 - Questions only you can answer (codes, PINs, which account) go to you through the side panel.
 
 **You stay in charge**
 - Send, post, pay, delete, upload and submit wait for your click in the browser or the control room. They are found by what the step does: the button's words in many languages, the form it submits, the request it makes.
-- Approve once, or for the whole site. A denied step stays denied.
+- Approve once, or the same kind of step on that site for 15 minutes or 10 uses. These yeses live in memory only, so a restart forgets them. A denied step stays denied.
 - Your own rules per site: `block`, `ask`, `allow`, limits like `send: 5/h`, which other domains a site may send data to, and `never_to`.
 - Agents can never open, read or click the control room, and can never change your rules.
 
 **It remembers**
-- **Routines**: a task that worked becomes a routine with variables. It runs again without the model, from the control room, the CLI or an agent. Try it first as a dry run that stops before anything is sent.
-- **Self-healing**: when a site moves a button, the routine finds the closest match. When the change is bigger, the routine is marked broken, an agent proposes a fix, the fix is dry-run at once, and you approve it.
+- **Routines**: a task that worked becomes a routine with variables. It runs again without the model, from the control room, the CLI or an agent.
+- **API first**: while the agent works, Tabgeist notices the site's own read requests. A routine replays those directly when it can (same site, your cookies, read-only), and clicks only where it must.
+- **Shadow runs**: try a routine with every write (POST, PUT, PATCH, DELETE) held back and listed as "would have sent", so you see exactly what it would do.
+- **Self-healing**: when a site moves a button, the routine scores every element on the new page against the one it saved (role, name, attributes, position) and takes the best match only when it is clearly ahead. No model involved. When the change is bigger, the routine is marked broken with a picture and the page as it is now, an agent proposes a fix, the fix is dry-run at once, and you approve it.
 - **Background checks**: read-only routines can be dry-run on a schedule to notice a site change before you need them.
 - **Site notes**: what one agent learned about a site (where things hide, what is slow) is there for the next one.
 
@@ -195,7 +200,8 @@ The honest reading: a pack is not always smaller than the screen, but it is comp
 - **Approvals the agent cannot skip.** Risky steps are found by what they do (the button's words in many languages, the form, the network request), not by asking the agent. They wait for your click in the browser or the control room. Agents cannot open, read or click the control room.
 - **Your rules per site.** `block`, `ask`, `allow`, limits like `send: 5/h`, which other domains a site may send data to, and `never_to`: people, numbers or emails nothing is ever sent to. Tabgeist reads who a message goes to from the page itself (the chat's header, the email's recipients), so the agent cannot talk its way past it.
 - **Secret fog.** Passwords, one-time codes and card numbers reach the agent as `{{secret:N}}`. It can type one back on the same site, never elsewhere.
-- **Data does not wander.** Text read on one site cannot be sent to another without your yes. Hidden page text never reaches the agent.
+- **Data does not wander.** Tabgeist remembers what agents read on each site. A request that carries that text, or a secret, to another site waits for your yes, even when a page tricks the agent into building the link. Hidden page text never reaches the agent.
+- **Only your browsers.** A browser drives Tabgeist only after you approve its 6-digit code. Only a hash of its key is stored, so another program on your computer cannot pose as the extension.
 - **Receipts.** Every step lands in a timeline with what was asked, what happened, who approved it and a picture after each action.
 
 What it does not protect against, and why: [`docs/architecture.md`](docs/architecture.md).
