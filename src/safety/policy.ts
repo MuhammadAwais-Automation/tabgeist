@@ -9,8 +9,11 @@ import { riskCategory, type RiskCategory } from '../engine/safety'
  *   allow: ['click:button "save draft"']                        # no card for this one
  *   limits: { send: 3/h, pay: 1/d }                            # at most this many approved steps
  *   outbound: [api.example.com]                                 # other domains this site may send data to
+ *   never_to: ['Ali Khan', '+92 300 1234567', '*@rival.com']    # never send, post or reply to these
  *
  * Patterns match `<action>:<role> "<name>"` (or `navigate:<url>`), lowercased; * is any text.
+ * never_to entries match who a message goes to (the chat's name or number, an email's
+ * recipients), found by Tabgeist itself around the Send button, never told by the agent.
  */
 
 export interface SitePolicy {
@@ -19,16 +22,17 @@ export interface SitePolicy {
   allow: string[]
   limits: Partial<Record<RiskCategory | 'any', { count: number; perMs: number; text: string }>>
   outbound: string[]
+  neverTo: string[]
 }
 
-export const EMPTY_POLICY: SitePolicy = { block: [], ask: [], allow: [], limits: {}, outbound: [] }
+export const EMPTY_POLICY: SitePolicy = { block: [], ask: [], allow: [], limits: {}, outbound: [], neverTo: [] }
 
 const PER: Record<string, number> = { m: 60_000, h: 3_600_000, d: 86_400_000 }
 
 export function parsePolicy(text: string): SitePolicy | string {
   let raw: unknown
   try { raw = parse(text) ?? {} } catch (e) { return `policy is not valid YAML: ${e instanceof Error ? e.message : String(e)}` }
-  if (typeof raw !== 'object' || Array.isArray(raw)) return 'policy must be a mapping (block:, ask:, allow:, limits:, outbound:)'
+  if (typeof raw !== 'object' || Array.isArray(raw)) return 'policy must be a mapping (block:, ask:, allow:, limits:, outbound:, never_to:)'
   const r = raw as Record<string, unknown>
   const list = (k: string): string[] | string => {
     const v = r[k]
@@ -42,6 +46,9 @@ export function parsePolicy(text: string): SitePolicy | string {
     if (typeof v === 'string') return v
     out[k] = v
   }
+  const never = list('never_to')
+  if (typeof never === 'string') return never
+  out.neverTo = never
   if (r.limits != null) {
     if (typeof r.limits !== 'object' || Array.isArray(r.limits)) return 'limits must be a mapping like { send: 3/h }'
     for (const [k, v] of Object.entries(r.limits as Record<string, unknown>)) {
@@ -65,6 +72,23 @@ export function judgeStep(p: SitePolicy, step: string): { verdict: 'block' | 'as
   for (const verdict of ['block', 'ask', 'allow'] as const) {
     const rule = p[verdict].find(r => globMatch(r, s))
     if (rule) return { verdict, rule }
+  }
+  return null
+}
+
+const digits = (s: string) => s.replace(/\D/g, '')
+
+/**
+ * The never_to entry that `who` (the recipient text Tabgeist found) matches, or null.
+ * A name or email matches anywhere in it. A phone number matches by its last nine
+ * digits, so "+92 300 1234567", "0300-1234567" and "923001234567" are one number.
+ */
+export function neverToHit(p: SitePolicy, who: string): string | null {
+  const text = who.toLowerCase()
+  const numbers = (text.match(/\+?[\d][\d\s()-]{5,}\d/g) ?? []).map(digits)
+  for (const rule of p.neverTo) {
+    const phone = /^[\d\s+()-]+$/.test(rule) && digits(rule).length >= 6
+    if (phone ? numbers.some(n => n.endsWith(digits(rule).slice(-9))) : globMatch(`*${rule}*`, text)) return rule
   }
   return null
 }

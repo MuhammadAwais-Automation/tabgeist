@@ -100,7 +100,7 @@ The honest reading: a pack is not always smaller than the screen, but it is comp
 ## Safety
 
 - **Approvals the agent cannot skip.** Risky steps are found by what they do (the button's words in many languages, the form, the network request), not by asking the agent. They wait for your click in the browser or the control room. Agents cannot open, read or click the control room.
-- **Your rules per site.** `block`, `ask`, `allow`, limits like `send: 5/h`, and which other domains a site may send data to.
+- **Your rules per site.** `block`, `ask`, `allow`, limits like `send: 5/h`, which other domains a site may send data to, and `never_to`: people, numbers or emails nothing is ever sent to. Tabgeist reads who a message goes to from the page itself (the chat's header, the email's recipients), so the agent cannot talk its way past it.
 - **Secret fog.** Passwords, one-time codes and card numbers reach the agent as `{{secret:N}}`. It can type one back on the same site, never elsewhere.
 - **Data does not wander.** Text read on one site cannot be sent to another without your yes. Hidden page text (invisible, off-screen, zero-width) never reaches the agent.
 - **Receipts.** Every step lands in a timeline with what was asked, what happened, who approved it and a picture after each action.

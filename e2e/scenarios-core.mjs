@@ -83,6 +83,26 @@ export const CORE = [
     },
   },
   {
+    name: 'never_to: a Send to a blocked chat never runs, even allowed or confirmed; another chat sends',
+    async run(h) {
+      const saved = await h.rpc('policy.save', { site: '127.0.0.1', text: "never_to: ['+92 300 1234567']\nallow: ['click:*send*']" })
+      h.ok(saved.ok, saved.error)
+      try {
+        const t = await h.open('/chats')
+        const s = await h.snap(t)
+        const [toAli, toSara] = h.refs(s, 'button', 'Send')
+        const ali = await h.act(t, { action: 'click', ref: toAli, confirm: true }, 'allow')
+        h.ok(!ali.receipt.ok && /never sends to/.test(ali.receipt.error) && ali.asked.length === 0, JSON.stringify(ali))
+        const enter = await h.act(t, { action: 'key', key: 'Enter', ref: h.ref(s, 'textbox', 'Message to Ali Khan') }, 'allow')
+        h.ok(!enter.receipt.ok && /never sends to/.test(enter.receipt.error), JSON.stringify(enter))
+        h.ok((await h.out(t)) === 'nothing yet', 'a message reached the blocked chat')
+        const sara = await h.act(t, { action: 'click', ref: toSara }, 'allow')
+        h.ok(sara.receipt.ok, JSON.stringify(sara))
+        await h.expectOut(t, 'sent to Sara Malik')
+      } finally { await h.rpc('policy.save', { site: '127.0.0.1', text: '' }) }
+    },
+  },
+  {
     name: 'languages: Enviar asks first, Guardar borrador does not',
     async run(h) {
       const t = await h.open('/enviar')

@@ -25,6 +25,7 @@ Tabgeist links your tools to the user's real browser, signed in as them. The use
 - `browser_snapshot` for the controls (refs); `within: "popup"` for menus and pickers. Then `browser_act` with those refs. After the page changes, take a new snapshot instead of guessing refs.
 - Risky steps (send, post, pay, delete, upload, share) pause for the user's click in the browser. You cannot approve them. A denied step stays denied: do not retry it or find another route to the same result unless the user asks.
 - `browser_ask_user` for anything only the user knows: codes, PINs, which account.
+- The user says never to message someone ("don't ever text Ali")? Save it as a `site_note` and tell them that a hard block is one line in the site's rules in the control room: `never_to: ['Ali Khan']`. You cannot write rules yourself.
 
 ## What to never do
 

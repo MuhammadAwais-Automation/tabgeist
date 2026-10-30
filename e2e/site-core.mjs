@@ -15,6 +15,9 @@ export const CORE_PAGES = {
     <label>Code <input id="c" aria-label="Code"></label><button onclick="out('verified ' + document.getElementById('c').value)">Verify</button>`),
   '/leak': shell('Inbox', `<main><p>Private note: quarterly revenue for the Lahore office was four point two million rupees this quarter.</p></main>`),
   '/rules': shell('Account', `<button onclick="out('archived')">Archive</button><button onclick="out('account deleted')">Delete account</button><button onclick="out('saved draft')">Save draft</button>`),
+  // Two open chats, each with its own header, box and Send: who a Send reaches is its own chat's header.
+  '/chats': shell('Messages', ['Ali Khan', 'Sara Malik'].map(n => `<section><header><h2>${n}</h2><span>+92 300 ${n === 'Ali Khan' ? '1234567' : '7654321'}</span></header>
+    <input aria-label="Message to ${n}" onkeydown="if (event.key === 'Enter') out('sent to ${n}')"><button onclick="out('sent to ${n}')">Send</button></section>`).join('')),
   '/shop': shell('Shop', `<div id="form"></div>`, `
     const v = new URLSearchParams(location.search).get('v') || '1'
     const box = document.getElementById('form')

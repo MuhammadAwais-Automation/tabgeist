@@ -580,7 +580,37 @@ async function sensitiveForm(dom: Send, backendNodeId: number): Promise<boolean>
  * The user's own rules for a site, asked before every step: block it, always
  * ask, or allow it without the built-in check. Null leaves it to the engine.
  */
-export type Judge = (req: ActRequest, target?: { role: string; name: string }) => 'block' | 'ask' | 'allow' | null
+export type Judge = ((req: ActRequest, target?: { role: string; name: string }) => 'block' | 'ask' | 'allow' | null) & {
+  /** The user's never_to rule that this recipient text matches, if the site has such rules. */
+  neverTo?: (who: string) => string | null
+}
+
+/**
+ * Who a step goes to, read around the element itself: from the Send button (or the box
+ * Enter is pressed in) up to the nearest container with a heading or recipient chips,
+ * which is the chat's header or the email's To line. The page title and address too.
+ */
+const RECIPIENT = `function () {
+  const t = s => (s || '').replace(/\\s+/g, ' ').trim()
+  const parts = [document.title, location.href]
+  let el = this && this.nodeType === 1 ? this : document.activeElement
+  for (let i = 0; el && i < 30; i++, el = el.parentElement) {
+    if (!el.querySelector('h1,h2,h3,header,[role=heading],[email]')) continue
+    for (const h of el.querySelectorAll('h1,h2,h3,header,[role=heading]')) parts.push(t(h.innerText).slice(0, 200))
+    for (const e of el.querySelectorAll('[email]')) parts.push(e.getAttribute('email') || '', t(e.getAttribute('name')))
+    for (const f of el.querySelectorAll('input[name=to],textarea[name=to]')) parts.push(f.value)
+    break
+  }
+  return parts.filter(Boolean).join(' | ').slice(0, 4000)
+}`
+
+async function recipientText(send: Send, backendNodeId?: number): Promise<string> {
+  const node = backendNodeId == null ? null : await send('DOM.resolveNode', { backendNodeId }).catch(() => null) as { object?: { objectId?: string } } | null
+  const r = node?.object?.objectId
+    ? await send('Runtime.callFunctionOn', { objectId: node.object.objectId, functionDeclaration: RECIPIENT, returnByValue: true })
+    : await send('Runtime.evaluate', { expression: `(${RECIPIENT}).call(null)`, returnByValue: true })
+  return String((r as { result?: { value?: unknown } }).result?.value ?? '')
+}
 
 /** Checks the ref still points at the element the agent saw, asks for confirm when needed, then acts. */
 async function runStep(send: Send, wc: PageTarget, req: ActRequest, highlight = false, judge?: Judge): Promise<StepResult> {
@@ -632,6 +662,12 @@ async function runStep(send: Send, wc: PageTarget, req: ActRequest, highlight = 
     // A label that changed since the snapshot is judged as it reads now, too.
     let reason = verdict === 'allow' ? null : confirmReason(req, entry ?? atPoint, sctx) ?? (entry && liveName && liveName !== entry.name ? confirmReason(req, { ...entry, name: liveName }, sctx) : null)
     if (!reason && verdict === 'ask') reason = 'the user\'s rules for this site ask before this step — ask the user first, then repeat with confirm: true'
+    // Who a risky step reaches is read from the page by Tabgeist, never taken from the agent;
+    // an allow rule or a confirm does not get past it.
+    if (judge?.neverTo && (reason || confirmReason(req, entry ?? atPoint, sctx))) {
+      const hit = judge.neverTo(await recipientText(frame?.send ?? send, entry?.backendNodeId).catch(() => ''))
+      if (hit) return { error: `the user never sends to "${hit}" on this site; this step is blocked, do not try another way`, target }
+    }
     if (reason && !req.confirm) return { error: reason, needsConfirm: true, target }
 
     const dom = frame?.send ?? send

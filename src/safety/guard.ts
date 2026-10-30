@@ -4,7 +4,7 @@ import type { SiteStore } from '../sites/store'
 import { ExfilWatch } from './exfil'
 import { SecretFog, siteKey } from './fog'
 import { leakReason } from './netgate'
-import { judgeStep, RateBook, stepKey } from './policy'
+import { judgeStep, neverToHit, RateBook, stepKey } from './policy'
 
 /**
  * All the daemon's safety in one place: secret fog, what was read where
@@ -34,8 +34,11 @@ export class Guard {
   /** The engine hook for a site: the user's block / ask / allow rules for each step. */
   judge(site: string): Judge {
     const p = this.sites.policy(site)
-    if (!p.block.length && !p.ask.length && !p.allow.length) return () => null
-    return (req, target) => judgeStep(p, stepKey(req.action, target))?.verdict ?? null
+    const judge: Judge = !p.block.length && !p.ask.length && !p.allow.length
+      ? () => null
+      : (req, target) => judgeStep(p, stepKey(req.action, target))?.verdict ?? null
+    if (p.neverTo.length) judge.neverTo = who => neverToHit(p, who)
+    return judge
   }
 
   /** Counts one approved risky step against the site's limits; the limit's text when it is reached. */

@@ -298,8 +298,8 @@ function Site({ site, done }: { site: string; done: Done }) {
           </div>)))}
 
       {tab === 'rules' && (<div class="plate">
-        <p class="lead">Your rules for {site}. Agents can read them but never change them. <code>block</code> never happens, <code>ask</code> always asks, <code>allow</code> skips the card, <code>limits</code> caps approved steps, <code>outbound</code> lists other domains this site may send data to.</p>
-        <textarea class="field" style="margin-top:var(--s3)" aria-label={`Rules for ${site}`} value={rules} onInput={e => setRules((e.target as HTMLTextAreaElement).value)} placeholder={"block: ['click:*delete account*']\nask: ['click:*archive*']\nallow: ['click:button \"save draft\"']\nlimits: { send: 5/h }\noutbound: []"} />
+        <p class="lead">Your rules for {site}. Agents can read them but never change them. <code>block</code> never happens, <code>ask</code> always asks, <code>allow</code> skips the card, <code>limits</code> caps approved steps, <code>outbound</code> lists other domains this site may send data to, <code>never_to</code> lists people, numbers or emails nothing is ever sent to.</p>
+        <textarea class="field" style="margin-top:var(--s3)" aria-label={`Rules for ${site}`} value={rules} onInput={e => setRules((e.target as HTMLTextAreaElement).value)} placeholder={"block: ['click:*delete account*']\nask: ['click:*archive*']\nallow: ['click:button \"save draft\"']\nlimits: { send: 5/h }\noutbound: []\nnever_to: ['Ali Khan', '+92 300 1234567']"} />
         <div class="row end" style="margin-top:var(--s3)"><button class="btn solid" onClick={async () => { const r = await api('policy.save', { site, text: rules }); done(r.ok ? 'Rules saved' : r.error, !r.ok) }}>Save rules</button></div>
       </div>)}
 

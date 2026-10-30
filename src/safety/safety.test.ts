@@ -8,7 +8,7 @@ import { ExfilWatch } from './exfil'
 import { findSecrets, luhn, SecretFog, siteKey } from './fog'
 import { Guard } from './guard'
 import { leakReason } from './netgate'
-import { globMatch, judgeStep, parsePolicy, RateBook, stepKey } from './policy'
+import { globMatch, judgeStep, neverToHit, parsePolicy, RateBook, stepKey } from './policy'
 
 describe('secret fog', () => {
   it('finds cards (Luhn), keys, tokens and codes, not ordinary numbers', () => {
@@ -103,6 +103,16 @@ describe('policy', () => {
     expect(judgeStep(p, stepKey('click', { role: 'button', name: 'Save draft' }))?.verdict).toBe('ask')
     expect(globMatch('click:button "save draft"', 'CLICK:button "Save Draft"')).toBe(true)
     expect(judgeStep(p, 'type')).toBeNull()
+  })
+
+  it('never_to matches names, emails and phone numbers however they are written', () => {
+    const p = parsePolicy("never_to: ['Ali Khan', '+92 300 1234567', '*@rival.com']") as Exclude<ReturnType<typeof parsePolicy>, string>
+    expect(neverToHit(p, 'WhatsApp | ALI KHAN | online')).toBe('ali khan')
+    expect(neverToHit(p, 'Chat | 0300-1234567')).toBe('+92 300 1234567')
+    expect(neverToHit(p, 'https://web.whatsapp.com/ | 923001234567')).toBe('+92 300 1234567')
+    expect(neverToHit(p, 'New message | boss@rival.com')).toBe('*@rival.com')
+    expect(neverToHit(p, 'Sara Ali | 0300-7654321 | boss@friend.com')).toBeNull()
+    expect(parsePolicy('never_to: Ali')).toMatch(/list/)
   })
 
   it('limits count approved steps per hour', () => {
