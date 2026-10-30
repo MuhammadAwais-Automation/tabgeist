@@ -1,6 +1,6 @@
 {
   "name": "tabgeist",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Let any AI agent work in your own signed-in Chrome or Edge: approvals it cannot skip, receipts, a local control room, and routines that learn, replay and heal themselves.",
   "type": "module",
   "license": "MIT",
