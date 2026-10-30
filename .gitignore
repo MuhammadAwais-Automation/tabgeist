@@ -1,0 +1,7 @@
+node_modules/
+dist/
+e2e/out/
+*.log
+CLAUDE.local.md
+# FlowDesk-era notes, kept locally only
+docs/architecture-kit.md

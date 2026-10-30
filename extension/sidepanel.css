@@ -1,0 +1,62 @@
+/* Side panel layout. Colours, type, lamps and buttons come from tokens.css (copied from design/ by the build). */
+
+html, body { height: 100%; }
+body { display: flex; flex-direction: column; font-size: var(--t-s); }
+
+header { display: flex; align-items: center; gap: var(--s3); padding: var(--s3) var(--s4); background: var(--panel); border-bottom: 1px solid var(--rule); }
+.mark { flex: none; border-radius: 22%; box-shadow: 0 0 0 1px var(--rule-strong); }
+.who { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.2; }
+.who strong { font-size: var(--t-m); font-weight: 800; letter-spacing: .02em; }
+.rename { all: unset; cursor: pointer; color: var(--ink-3); font-size: var(--t-xs); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px; }
+.rename:hover { color: var(--ink); }
+.rename:focus-visible { box-shadow: var(--focus); }
+
+main { flex: 1; overflow: auto; padding: var(--s2) var(--s4) var(--s4); display: flex; flex-direction: column; gap: var(--s2); }
+section { padding-top: var(--s3); }
+section.grow { flex: 1; display: flex; flex-direction: column; min-height: 140px; }
+h2 { margin: 0 0 var(--s2); font-size: var(--t-s); font-weight: 700; display: flex; gap: var(--s2); align-items: baseline; }
+.count { color: var(--ink-3); font-weight: 400; }
+.hint { color: var(--ink-2); font-size: var(--t-xs); margin: var(--s1) 0 0; }
+.empty { color: var(--ink-3); font-size: var(--t-xs); margin: 0; }
+.stack { display: grid; gap: var(--s2); }
+
+/* Signals: what waits for the person, with the amber edge */
+.signal { display: grid; grid-template-columns: 3px minmax(0, 1fr); background: var(--panel); border: 1px solid color-mix(in srgb, var(--amber) 40%, var(--rule)); border-radius: var(--r-plate); overflow: hidden; }
+.signal[hidden] { display: none; }
+.signal::before { content: ""; background: var(--amber); }
+.signal > div { padding: var(--s3); display: grid; gap: var(--s2); min-width: 0; }
+.signal .title { font-weight: 700; font-size: var(--t-m); line-height: 1.3; display: flex; gap: var(--s2); align-items: baseline; }
+.signal .title .lamp { align-self: center; }
+.signal .meta { color: var(--ink-3); font-size: var(--t-xs); }
+.signal .detail { color: var(--ink-2); font-size: var(--t-xs); }
+.signal .kv { padding: var(--s2) var(--s3); }
+.signal .kv dd { max-height: 120px; }
+.pair { margin-top: var(--s3); }
+.pair .kicker { margin: 0; color: var(--amber); font-weight: 700; font-size: var(--t-xs); }
+.code { font: 700 30px/1.1 var(--mono); letter-spacing: .12em; margin: var(--s1) 0; }
+.row { display: flex; gap: var(--s2); flex-wrap: wrap; }
+.row .field { flex: 1; min-width: 0; }
+
+/* Agent tabs as lines */
+.lines { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.lines li { display: grid; grid-template-columns: 9px minmax(0, 1fr); gap: var(--s3); align-items: center; padding: var(--s2) var(--s3); border-radius: var(--r-control); cursor: pointer; background: var(--panel); border: 1px solid var(--rule); }
+.lines li:hover { border-color: var(--rule-strong); }
+.lines li:focus-visible { box-shadow: var(--focus); }
+.lines .t { min-width: 0; display: flex; flex-direction: column; }
+.lines .t b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lines .t span { color: var(--ink-3); font-size: var(--t-xs); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Live log on a track line */
+.log { list-style: none; margin: 0; padding: 0 0 0 var(--s3); flex: 1; overflow: auto; font-size: var(--t-xs); border-left: 2px solid var(--track); }
+.log li { display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: var(--s2); padding: var(--s1) 0; position: relative; }
+.log li::before { content: ""; position: absolute; left: calc(-1 * var(--s3) - 6px); top: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--bg); border: 2px solid var(--track); }
+.log li.bad::before { border-color: var(--red); background: var(--red); }
+.log time { color: var(--ink-3); white-space: nowrap; }
+.log .k { color: var(--ink-3); margin-right: var(--s2); }
+.log .a { color: var(--ink-3); margin-left: var(--s2); }
+
+footer { border-top: 1px solid var(--rule); padding: var(--s3) var(--s4); background: var(--panel); display: flex; flex-direction: column; gap: var(--s2); }
+footer > .btn { width: 100%; }
+summary { color: var(--ink-3); cursor: pointer; font-size: var(--t-xs); }
+.port { display: flex; gap: var(--s2); align-items: center; margin-top: var(--s2); color: var(--ink-2); font-size: var(--t-xs); }
+.port .field { width: 90px; min-height: 28px; padding: var(--s1) var(--s2); }

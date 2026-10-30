@@ -1,0 +1,6 @@
+{
+  "name": "youtube",
+  "version": "0.1.0",
+  "site": "youtube.com",
+  "about": "Reads YouTube videos, search results and video lists (home, channel, playlist) as clean data, signed in as you."
+}

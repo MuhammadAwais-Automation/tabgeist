@@ -1,0 +1,6 @@
+{
+  "name": "hackernews",
+  "version": "0.1.0",
+  "site": "ycombinator.com",
+  "about": "Reads Hacker News stories and comment threads as clean data, from any page on news.ycombinator.com."
+}

@@ -1,0 +1,66 @@
+{
+  "name": "tabgeist",
+  "version": "0.1.0",
+  "description": "Let any AI agent work in your own signed-in Chrome or Edge: approvals it cannot skip, receipts, a local control room, and routines that learn, replay and heal themselves.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Muhammad Awais",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MuhammadAwais-Automation/tabgeist.git"
+  },
+  "homepage": "https://github.com/MuhammadAwais-Automation/tabgeist#readme",
+  "bugs": "https://github.com/MuhammadAwais-Automation/tabgeist/issues",
+  "keywords": [
+    "mcp",
+    "browser",
+    "ai-agent",
+    "chrome-extension",
+    "claude-code",
+    "codex",
+    "cursor",
+    "automation",
+    "browser-automation"
+  ],
+  "files": [
+    "dist",
+    "extension",
+    "packs",
+    "skills",
+    "README.md",
+    "LICENSE"
+  ],
+  "bin": {
+    "tabgeist": "dist/cli.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "start": "node dist/cli.mjs start",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "e2e": "node e2e/run.mjs",
+    "e2e:soak": "node e2e/run.mjs --soak 20",
+    "ext:zip": "node scripts/pack-extension.mjs",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "ws": "^8.22.0",
+    "yaml": "^2.9.1",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@fontsource-variable/overpass": "^5.3.0",
+    "@fontsource-variable/overpass-mono": "^5.3.0",
+    "@types/node": "^24.13.3",
+    "@types/ws": "^8.18.2",
+    "esbuild": "^0.28.1",
+    "fflate": "^0.8.3",
+    "preact": "^10.29.8",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.8"
+  }
+}

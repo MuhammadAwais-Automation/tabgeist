@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>Tabgeist</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <header>
+    <img class="mark" src="icons/icon48.png" width="26" height="26" alt="">
+    <div class="who">
+      <strong id="brand">Tabgeist</strong>
+      <button id="profile" class="rename" type="button" title="Rename this browser">—</button>
+    </div>
+    <span id="status" class="state"><span class="lamp"></span><span id="status-text">Offline</span></span>
+  </header>
+
+  <main>
+    <section id="pair-wrap" class="signal pair" hidden>
+      <div>
+        <p class="kicker">Link this browser</p>
+        <div id="code" class="code">––– –––</div>
+        <p class="hint">Approve this code in the control room on this computer. Run <code>tabgeist open</code> if it is not open yet.</p>
+      </div>
+    </section>
+
+    <section id="questions-wrap" hidden>
+      <h2>Needs your answer</h2>
+      <div id="questions" class="stack"></div>
+    </section>
+
+    <section id="approvals-wrap" hidden>
+      <h2>Waiting for your yes</h2>
+      <div id="approvals" class="stack"></div>
+    </section>
+
+    <section>
+      <h2>Agent tabs <span id="tabs-count" class="count"></span></h2>
+      <ul id="tabs" class="lines"></ul>
+      <p id="tabs-empty" class="empty">No agent tabs. Pages an agent opens show up here, and in the amber tab group.</p>
+    </section>
+
+    <section class="grow">
+      <h2>Live</h2>
+      <ol id="log" class="log"></ol>
+      <p id="log-empty" class="empty">Every read and action shows up here as it happens.</p>
+    </section>
+  </main>
+
+  <footer>
+    <button id="room" class="btn solid" type="button">Open control room</button>
+    <details>
+      <summary>Connection</summary>
+      <p id="help" class="hint"></p>
+      <div class="port">
+        <label for="port">Port</label>
+        <input id="port" class="field" type="number" min="1" max="65535">
+        <button id="save-port" class="btn small" type="button">Reconnect</button>
+      </div>
+    </details>
+  </footer>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>

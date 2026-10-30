@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "Tabgeist",
+  "version": "0.1.2",
+  "description": "Lets your AI agents work in your own Chrome or Edge tabs, signed in as you, with your approval for every risky step.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7QZ7PKAGj7xD5SdWoQlrC80APV2NY8zj4BOgDV50Yb4EdaLySWHi95XNMifGtiNePp/W/fl/dKatsuV2bznpU1eT2GgR9dJ758PabQ+7gdiXrDwvV2sHd5mRN2n2T/Q9FORZ3ML+JivrrDK0YJaDJcGDdSY1XRBtSTaujWh0m5+sKsJxqW9zrwRW6pUPDykAQqp1jdQ6+ic+LvyP5BkQ5eHHJh95D4wwA1eu1zDO/4NfHD1C2dgKY5tO7Mnt7+Yb3qCwkJ9oVVB2COCfnhnTYWR2c7GhDLaPY6FcuaMsPqfhzoZZq20PbCgD0ayc4ALhq1wx7wWW+ovgEvJOL1sOBQIDAQAB",
+  "minimum_chrome_version": "125",
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": [
+    "debugger",
+    "tabs",
+    "tabGroups",
+    "sidePanel",
+    "storage",
+    "alarms",
+    "scripting",
+    "notifications",
+    "downloads"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "action": {
+    "default_title": "Tabgeist",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

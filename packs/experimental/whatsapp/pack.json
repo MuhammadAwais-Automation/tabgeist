@@ -1,0 +1,6 @@
+{
+  "name": "whatsapp",
+  "version": "0.1.0",
+  "site": "whatsapp.com",
+  "about": "Reads WhatsApp Web chats and messages straight from the app, without opening a chat (it stays unread)."
+}
