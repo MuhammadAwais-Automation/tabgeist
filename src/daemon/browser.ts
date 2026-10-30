@@ -19,6 +19,9 @@ import type { DaemonState } from './state'
  * control room, never by the agent.
  */
 
+/** Web apps that allow one open tab per browser; browser_open reuses that tab. */
+export const ONE_TAB = new Set(['web.whatsapp.com'])
+
 /** Who is calling, and what the timeline should know about the call. */
 export interface CallCtx {
   d: DaemonState
@@ -164,6 +167,21 @@ export const browserMethods: Record<string, Method> = {
     if (!url) return { ok: false, error: 'url is required (http or https)' }
     const refused = await navigationOk(ctx, c, -1, url)
     if (refused) return { ok: false, error: refused }
+    // Apps that run in one tab per browser: a second tab only shows "open in another window".
+    const host = new URL(url).hostname
+    if (ONE_TAB.has(host)) {
+      const open = (await c.request('tabs.list') as TabInfo[]).filter(x => { try { return new URL(x.url).hostname === host } catch { return false } })
+      const tab = open.find(x => x.agent) ?? open[0]
+      if (tab) {
+        ctx.d.guard.visit(hostLabel(tab.url))
+        recording.begin(`${c.label}#${tab.id}`, tab.url)
+        ctx.meta.browser = c.label
+        ctx.meta.tab = tab.id
+        ctx.meta.site = hostLabel(tab.url)
+        note(c, tab.id, 'open', `reused the open ${host} tab`, true, ctx.agent)
+        return { ok: true, tab, reused: true, note: `${host} runs in one tab per browser, so this is the tab already open${tab.agent ? '' : " (the user's own; it stays where it is)"}. Move inside the app instead of opening it again.` }
+      }
+    }
     const tab = await c.request('tabs.open', { url, active: p.active === true }) as TabInfo
     ctx.d.guard.visit(hostLabel(tab.url || url))
     recording.begin(`${c.label}#${tab.id}`, tab.url || url)

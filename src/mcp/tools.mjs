@@ -71,7 +71,7 @@ export function registerBrowserTools(server, call) {
 
   server.tool(
     'browser_open',
-    'Open a page in the user\'s Chrome as an agent tab: in the background (does not take the screen unless active: true), in the orange Tabgeist tab group, never discarded, works while Chrome is minimised. Waits for the page to load and returns the tab (use its id with browser_snapshot / browser_act). Plain words become a Google search.',
+    'Open a page in the user\'s Chrome as an agent tab: in the background (does not take the screen unless active: true), in the orange Tabgeist tab group, never discarded, works while Chrome is minimised. Waits for the page to load and returns the tab (use its id with browser_snapshot / browser_act). Plain words become a Google search. Apps that run in one tab per browser (WhatsApp Web) are not opened twice: you get the tab already open (reused: true), which stays where it is.',
     {
       url: z.string().describe('http(s) address, or words to search.'),
       active: z.boolean().optional().describe('Bring the tab to the front. Default false.'),

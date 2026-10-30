@@ -90,6 +90,18 @@ The three tools people most often reach for to let an agent use a real browser, 
 | Runs fully on your computer, no account | ✅ | ✅ | ✅ library; cloud is paid | Needs a paid Claude plan |
 | License | MIT | Apache-2.0 | MIT | Proprietary |
 
+### Only in Tabgeist
+
+None of the three tools above does these, going by their own documentation:
+
+- **`never_to`**: block a person, number or email on a site. Tabgeist reads the recipient from the page, so no prompt can talk past it.
+- **Routines that heal**: a task replays without the AI, and when the site changes it finds its way again without a model, or hands you a fix to approve.
+- **Memory per site**: site notes carry what one agent learned (where a button hides, what is slow) to the next agent, along with your rules and saved routines.
+- **Packs**: a site's own data in one call, instead of reading the screen.
+- **A timeline with pictures**: every call, who approved it, and a picture after each action, saved as one HTML replay.
+- **Your open tabs, respected**: the agent checks what you have open and asks before working in your tab. Apps that allow one tab (WhatsApp Web) are never opened a second time.
+- **Data that stays put**: what an agent reads on one site cannot leave for another without your yes.
+
 They are good tools with different aims: Playwright MCP is built for testing and automation, Browser Use for agents you write in Python, Claude in Chrome for chatting with Claude in your browser. Tabgeist is for letting the coding agent you already use work in your real accounts without handing it the keys.
 
 ## Features
@@ -101,6 +113,7 @@ They are good tools with different aims: Playwright MCP is built for testing and
 - Acts like a person: a real mouse and keyboard for click, type, select, drag, drop and upload. Files the page downloads are saved and handed to the agent.
 - Sees what text cannot say: a picture of the page, of the whole scrolling page, or of one element by ref (a GIF in a picker, a chart, a canvas, the frame a video is showing). Pictures are of the page itself, never of your screen.
 - Saves what a page shows or links to (an image, a video, a PDF) with your sign-in, into `Downloads/Tabgeist/<site>`.
+- Respects your open tabs: the agent sees what you have open and asks before working in your tab. Apps that run in one tab per browser (WhatsApp Web) are reused, never opened twice.
 - Several agents at once: each tab belongs to one agent at a time. A second agent waits and is told "in use by …" instead of clicking into the middle of someone else's task.
 - Questions only you can answer (codes, PINs, which account) go to you through the side panel.
 

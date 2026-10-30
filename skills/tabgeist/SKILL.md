@@ -12,6 +12,7 @@ Tabgeist links your tools to the user's real browser, signed in as them. The use
 1. `browser_status`. Not connected → tell the user to open their browser with the Tabgeist extension and approve its code in the control room (`open_control_room`). Do not try other ways in.
 2. `site_notes` for the site: lessons from earlier agents, the site's pack (what it can read for you), saved routines, and the user's rules. Read it once per site per session.
 3. A saved routine that does the task? `routine_run` it (try `shadow: true` first if unsure). Done.
+4. `browser_tabs` before `browser_open`. The site already open in one of the user's tabs → `browser_ask_user`: "work in your open tab, or open a new one?" and do what they pick. Apps that run in one tab (WhatsApp Web) come back from `browser_open` as that tab (`reused: true`); say so to the user before acting there.
 
 ## Reading: cheapest way first
 
